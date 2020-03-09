@@ -18,20 +18,17 @@ router.post("/register-user",
         check('email', 'Email is required')
             .not()
             .isEmpty(),
-        check('password', 'Password should be between 5 to 8 characters long')
+        check('pass', 'Password should be between 5 to 8 characters long')
             .not()
             .isEmpty()
             .isLength({ min: 5, max: 8 })
     ],
     (req, res, next) => {
         const errors = validationResult(req);
-        console.log(req.body);
-
         if (!errors.isEmpty()) {
             return res.status(422).jsonp(errors.array());
-        }
-        else {
-            bcrypt.hash(req.body.password, 10).then((hash) => {
+        } else {
+            bcrypt.hash(req.body.pass, 10).then((hash) => {
                 const user = new userSchema({
                     name: req.body.name,
                     email: req.body.email,
@@ -47,7 +44,7 @@ router.post("/register-user",
                         error: error
                     });
                 });
-            });
+            })
         }
     });
 
@@ -64,7 +61,7 @@ router.post("/signin", (req, res, next) => {
             });
         }
         getUser = user;
-        return bcrypt.compare(req.body.password, user.password);
+        return bcrypt.compare(req.body.pass, user.password);
     }).then(response => {
         if (!response) {
             return res.status(401).json({
